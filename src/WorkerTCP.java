@@ -17,22 +17,17 @@ public class WorkerTCP implements Runnable {
 
     public void run() {
         String input;
-        while(true) {
-            try {
-                input=in.readLine();
-                if(input!=null && !input.equals("q")) {
-                    out.println("You typed: " + input);
-                    out.flush();
-                }
-                else {
-                    s.shutdownInput();
-                    s.shutdownOutput();
-                    s.close();
-                    break;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+        try {
+            while ((input = in.readLine()) != null && !input.equals("q")) {
+                out.println("You typed: " + input);
+                out.flush();
             }
+            s.shutdownInput();
+            s.shutdownOutput();
+            s.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

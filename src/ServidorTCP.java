@@ -8,7 +8,6 @@ public class ServidorTCP {
 
         while (true) {
             Socket clSock = sSocket.accept();
-
             WorkerTCP worker = new WorkerTCP(clSock);
 
             System.out.println("Assigning new thread to new client");
