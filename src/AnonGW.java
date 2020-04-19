@@ -1,14 +1,14 @@
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class ServidorTCP {
+public class AnonGW {
 
     public static void main(String... args) throws Exception {
         ServerSocket sSocket = new ServerSocket(12345);
 
         while (true) {
             Socket clSock = sSocket.accept();
-            WorkerTCP worker = new WorkerTCP(clSock);
+            SocketListener worker = new SocketListener(clSock);
 
             System.out.println("Assigning new thread to new client");
 

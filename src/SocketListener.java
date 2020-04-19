@@ -3,13 +3,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class WorkerTCP implements Runnable {
+public class SocketListener implements Runnable {
 
     private BufferedReader in;
     private PrintWriter out;
     private Socket s;
 
-    public WorkerTCP(Socket s) throws Exception {
+    public SocketListener(Socket s) throws Exception {
         this.in = new BufferedReader(new InputStreamReader(s.getInputStream()));
         this.out = new PrintWriter(s.getOutputStream());
         this.s = s;
