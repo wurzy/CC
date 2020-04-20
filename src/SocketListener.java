@@ -53,9 +53,10 @@ public class SocketListener implements Runnable {
                 outBuffer = Arrays.copyOf(inBuffer,len);
                 out.write(outBuffer);
                 out.flush();
+                System.out.println("Sent " + Arrays.toString(inBuffer));
+                Thread toServerToClient = new Thread(this.sendback);
+                toServerToClient.start();
             }
-           // Thread toServerToClient = new Thread(this.sendback);
-           // toServerToClient.start();
 
             client.shutdownInput();
             client.shutdownOutput();

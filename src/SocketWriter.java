@@ -23,9 +23,10 @@ public class SocketWriter implements Runnable {
         this.server = server;
         this.client = cl;
         this.ip = ip;
-        this.port = 123543;//port;
+        this.port = 12543;//port;
         this.in = this.server.getInputStream();
         this.out = this.client.getOutputStream();
+        this.inBuffer = new byte[MAXSIZE];
     }
 
     public void run() {

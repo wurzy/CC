@@ -17,7 +17,8 @@ public class Worker implements Runnable{
     public void run() {
         String input;
         try {
-            while ((input = in.readLine()) != null && !input.equals("q")) {
+            while ((input = in.readLine()) != null && !input.equals("exit")) {
+                System.out.println("Received: "+ input);
                 out.println("You typed: " + input);
                 out.flush();
             }
