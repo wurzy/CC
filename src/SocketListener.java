@@ -1,51 +1,65 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.List;
 
+/* Serve para estabelecer conexao Cliente-Gateway
+ */
+
 public class SocketListener implements Runnable {
     private final int MAXSIZE = 65536; // 64 kb
 
-    private BufferedReader in;
-    private PrintWriter out;
-    private Socket s;
+    private OutputStream out;
+    private InputStream in;
+    private Socket client;
+    private Socket server;
 
+    // vai ser preciso para a 2 fase
     private Arguments arguments;
     private List<String> peers;
     private String target;
+    private int port;
 
-    private byte[] inBuffer;
-    private byte[] outBuffer;
-    private SocketWriter server;
+    private byte[] inBuffer; // enviado pelo client
+    private byte[] outBuffer; // enviado para o servidor
+    private SocketWriter sendback;
 
 
     public SocketListener(Socket s, Arguments arg) throws Exception {
-        this.in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-        this.out = new PrintWriter(s.getOutputStream());
-        this.s = s;
+        this.peers = arg.getArgumentsOf("peers");
+        this.target = arg.getArgumentsOf("target").get(0);
+        this.port = Integer.valueOf(arg.getArgumentsOf("port").get(0));
         this.arguments = arg;
 
-        this.inBuffer = new byte[MAXSIZE];
-        this.outBuffer = new byte[MAXSIZE];
+        //this.server = new Socket(target,port); //MUDAR AQUI
+        this.server = new Socket("127.0.0.1",12543);
 
-        peers = arg.getArgumentsOf("peers");
-        target = arg.getArgumentsOf("target").get(0);
+        this.in = s.getInputStream();
+        this.out = server.getOutputStream();
+        this.client = s;
+
+        this.inBuffer = new byte[MAXSIZE];
+
+        this.sendback = new SocketWriter(this.server,this.client,this.target,this.port);
+       // this.outBuffer = new byte[MAXSIZE];
     }
 
     public void run() {
         int len;
         try {
-            while((len = s.getInputStream().read(inBuffer,0, MAXSIZE)) != -1) {
-                System.out.println("You typed: " + Arrays.toString(inBuffer));
+            // recebe bytes do cliente
+            while((len = in.read(inBuffer,0, MAXSIZE)) != -1) {
+                System.out.println("Client: " + client.getRemoteSocketAddress() + "\n" + Arrays.toString(inBuffer));
                 outBuffer = Arrays.copyOf(inBuffer,len);
-                s.getOutputStream().write(outBuffer);
-                s.getOutputStream().flush();
+                out.write(outBuffer);
+                out.flush();
             }
-            s.shutdownInput();
-            s.shutdownOutput();
-            s.close();
+           // Thread toServerToClient = new Thread(this.sendback);
+           // toServerToClient.start();
+
+            client.shutdownInput();
+            client.shutdownOutput();
+            client.close();
         }
         catch (Exception e) {
             e.printStackTrace();
